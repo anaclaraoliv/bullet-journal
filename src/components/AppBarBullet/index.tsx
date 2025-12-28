@@ -7,6 +7,12 @@ const AppBarBullet = () => {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="fixed"  sx={{ zIndex: 1}}>
                 <Toolbar>
+                    <Box
+                        component="img"
+                        sx={{ mr: 5, width: 40, height: 40 }}
+                        src="/logos/LOGO-JANELA-DOIS.png"
+                        alt="Logo Janela Dois"
+                    />
                     <Typography
                         className={styles['item-app-bar']}
                         sx={{ flexGrow: 1 }}

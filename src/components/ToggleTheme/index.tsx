@@ -18,7 +18,7 @@ const ToggleTheme = ({ isDarkMode, onToggle }: ToggleThemeProps) => {
             startIcon={isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
             sx={{ borderRadius: 20}}
         >
-            {isDarkMode ? 'Claro' : 'Escuro'}
+            {isDarkMode ? 'LIGTH MODE' : 'DARK MODE'}
         </Button>
     );
 };

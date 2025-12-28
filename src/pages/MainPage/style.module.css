@@ -1,0 +1,13 @@
+.to-do-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 750px;
+    width: 35%;
+    margin: 0 auto;
+}
+
+.accordion-style {
+    width: 100%;
+    padding: 10px;
+}

@@ -1,6 +1,7 @@
 import { createTheme } from '@mui/material/styles';
 import type { ThemeOptions } from '@mui/material/styles';
 
+// ligthColors
 const LigthColors = {
     primary: '#BFB0C4',
     primaryLight: '#F9E8FF',
@@ -24,7 +25,7 @@ const LigthColors = {
     processingLight: '#EEE2C3',
 };
 
-//  darkcColors
+//  darkColors
 const DarkColors = {
     primary: '#7B6F82',
     primaryLight: '#8E7D96',
@@ -45,6 +46,20 @@ const DarkColors = {
     warning: '#D9CF96',
 };
 
+// MarkTasksColours
+const MarkTasksColors = {
+    purple: '9752B9',
+    blue: '6BBFE3',
+    red: 'D7686A',
+    lilac: 'A994FC',
+    pink: 'FFA9F2',
+    olive: 'BADC51',
+    orange: 'F0B97E',
+    yellow: 'F0ED6E',
+    green: '64DA85',
+    pool: '48F6D9',
+}
+
 // Definições comuns
 const commonSettings: ThemeOptions = {
     typography: {
@@ -61,7 +76,6 @@ const commonSettings: ThemeOptions = {
             fontSize: '2rem',
         },
 
-
     },
 
     components: {
@@ -69,6 +83,14 @@ const commonSettings: ThemeOptions = {
             styleOverrides: {
                 root: {
                     color: LigthColors.textPrimary,
+                },
+            },
+        },
+
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 10,
                 },
             },
         },
@@ -103,7 +125,7 @@ export const lightTheme = createTheme({
             light: LigthColors.processingLight,
         },
         background: {
-            default: LigthColors.background,
+            default: LigthColors.primaryLight,
         },
         text: {
             primary: LigthColors.textPrimary,
@@ -123,8 +145,15 @@ export const lightTheme = createTheme({
                 },
             },
         },
-    },
 
+        // MuiPaper: {
+        //     styleOverrides: {
+        //         root: {
+        //             elevation,
+        //         },
+        //     },
+        // },
+    },
 });
 
 // darkTheme
@@ -163,5 +192,13 @@ export const darkTheme = createTheme({
             main: DarkColors.tertiary,
         },
     },
-
+    components: {
+        MuiAccordion: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: 'transparent',
+                },
+            },
+        },
+    },
 });
