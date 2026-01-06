@@ -47,18 +47,18 @@ const DarkColors = {
 };
 
 // MarkTasksColours
-const MarkTasksColors = {
-    purple: '9752B9',
-    blue: '6BBFE3',
-    red: 'D7686A',
-    lilac: 'A994FC',
-    pink: 'FFA9F2',
-    olive: 'BADC51',
-    orange: 'F0B97E',
-    yellow: 'F0ED6E',
-    green: '64DA85',
-    pool: '48F6D9',
-}
+// const MarkTasksColors = {
+//     purple: '9752B9',
+//     blue: '6BBFE3',
+//     red: 'D7686A',
+//     lilac: 'A994FC',
+//     pink: 'FFA9F2',
+//     olive: 'BADC51',
+//     orange: 'F0B97E',
+//     yellow: 'F0ED6E',
+//     green: '64DA85',
+//     pool: '48F6D9',
+// }
 
 // Definições comuns
 const commonSettings: ThemeOptions = {
@@ -86,14 +86,14 @@ const commonSettings: ThemeOptions = {
                 },
             },
         },
-
-        MuiPaper: {
-            styleOverrides: {
-                root: {
-                    borderRadius: 10,
-                },
-            },
-        },
+        //
+        // MuiPaper: {
+        //     styleOverrides: {
+        //         root: {
+        //             borderRadius: 10,
+        //         },
+        //     },
+        // },
     },
 };
 
@@ -146,13 +146,22 @@ export const lightTheme = createTheme({
             },
         },
 
-        // MuiPaper: {
-        //     styleOverrides: {
-        //         root: {
-        //             elevation,
-        //         },
-        //     },
-        // },
+        MuiListItem : {
+            styleOverrides: {
+                root: {
+                    backgroundColor: LigthColors.primary,
+                    width: '90%',
+                }
+            }
+        },
+
+        MuiTypography : {
+            styleOverrides: {
+                root: {
+                    color: LigthColors.textPrimary,
+                }
+            }
+        },
     },
 });
 
@@ -199,6 +208,23 @@ export const darkTheme = createTheme({
                     backgroundColor: 'transparent',
                 },
             },
+        },
+
+        MuiListItem : {
+            styleOverrides: {
+                root: {
+                    backgroundColor: DarkColors.primaryDark,
+                    width: '90%',
+                }
+            }
+        },
+
+        MuiTypography : {
+            styleOverrides: {
+                root: {
+                    color: DarkColors.textPrimary,
+                }
+            }
         },
     },
 });

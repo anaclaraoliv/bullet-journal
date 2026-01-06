@@ -10,7 +10,7 @@ const AppBarBullet = () => {
                     <Box
                         component="img"
                         sx={{ mr: 5, width: 40, height: 40 }}
-                        src="/logos/LOGO-JANELA-DOIS.png"
+                        src="/logos/LOGO-JANELA.png"
                         alt="Logo Janela Dois"
                     />
                     <Typography
