@@ -86,11 +86,13 @@ const commonSettings: ThemeOptions = {
                 },
             },
         },
-        //
-        // MuiPaper: {
+
+        // MuiModal: {
         //     styleOverrides: {
         //         root: {
-        //             borderRadius: 10,
+        //             borderRadius: '10px',
+        //             margin: '2em',
+        //
         //         },
         //     },
         // },
@@ -162,6 +164,25 @@ export const lightTheme = createTheme({
                 }
             }
         },
+
+        MuiButton : {
+            styleOverrides: {
+                root: {
+                    color: LigthColors.textPrimary,
+                    borderColor: LigthColors.textPrimary,
+                }
+            }
+        },
+
+        MuiModal : {
+            styleOverrides: {
+                root: {
+                    backgroundColor: LigthColors.processingLight,
+                    border: '3px solid #A37E8D',
+                    borderRadius: '20px',
+                }
+            }
+        }
     },
 });
 
@@ -201,6 +222,7 @@ export const darkTheme = createTheme({
             main: DarkColors.tertiary,
         },
     },
+
     components: {
         MuiAccordion: {
             styleOverrides: {
@@ -226,5 +248,25 @@ export const darkTheme = createTheme({
                 }
             }
         },
+
+        MuiButton : {
+            styleOverrides: {
+                root: {
+                    color: DarkColors.textPrimary,
+                    borderColor: DarkColors.textPrimary,
+                    border: '1px solid',
+                }
+            }
+        },
+
+        MuiModal : {
+            styleOverrides: {
+                root: {
+                    backgroundColor: DarkColors.secondaryDark,
+                    border: '1px solid #D9CF96',
+                    borderRadius: '20px',
+                }
+            }
+        }
     },
 });
