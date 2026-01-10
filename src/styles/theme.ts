@@ -170,19 +170,20 @@ export const lightTheme = createTheme({
                 root: {
                     color: LigthColors.textPrimary,
                     borderColor: LigthColors.textPrimary,
+                    border: '1px solid',
                 }
             }
         },
 
-        MuiModal : {
-            styleOverrides: {
-                root: {
-                    backgroundColor: LigthColors.processingLight,
-                    border: '3px solid #A37E8D',
-                    borderRadius: '20px',
-                }
-            }
-        }
+        // MuiModal : {
+        //     styleOverrides: {
+        //         root: {
+        //             backgroundColor: LigthColors.processingLight,
+        //             border: '3px solid #A37E8D',
+        //             borderRadius: '20px',
+        //         }
+        //     }
+        // }
     },
 });
 
@@ -259,14 +260,14 @@ export const darkTheme = createTheme({
             }
         },
 
-        MuiModal : {
-            styleOverrides: {
-                root: {
-                    backgroundColor: DarkColors.secondaryDark,
-                    border: '1px solid #D9CF96',
-                    borderRadius: '20px',
-                }
-            }
-        }
+        // MuiModal : {
+        //     styleOverrides: {
+        //         root: {
+        //             backgroundColor: DarkColors.secondaryDark,
+        //             border: '1px solid #D9CF96',
+        //             borderRadius: '20px',
+        //         }
+        //     }
+        // }
     },
 });

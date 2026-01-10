@@ -7,7 +7,7 @@ import { useToggleTheme } from './components/ToggleTheme/hooks/useToggleTheme';
 import ToggleTheme from "./components/ToggleTheme";
 
 function App() {
-    const { isDarkMode, onToggle} = useToggleTheme(false);
+    const { isDarkMode, onToggle} = useToggleTheme(true);
 
     return (
         <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
