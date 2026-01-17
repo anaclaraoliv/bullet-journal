@@ -1,8 +1,12 @@
 import {AppBar, Box, Toolbar, Typography, Link} from '@mui/material';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import styles from './style.module.css';
+import { useAppTheme } from '../../contexts/ThemeContext';
+import ToggleTheme from "../ToggleTheme";
 
 const AppBarBullet = () => {
+    const { isDarkMode , onToggle } = useAppTheme();
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="fixed"  sx={{ zIndex: 1}}>
@@ -10,7 +14,7 @@ const AppBarBullet = () => {
                     <Box
                         component="img"
                         sx={{ mr: 5, width: 40, height: 40 }}
-                        src="/logos/LOGO-JANELA.png"
+                        src={isDarkMode ? "/logos/LOGO-JANELA-DARK.png" : "/logos/LOGO-JANELA.png"}
                         alt="Logo Janela Dois"
                     />
                     <Typography
@@ -25,6 +29,7 @@ const AppBarBullet = () => {
                     </Typography>
 
 
+                    <ToggleTheme isDarkMode={isDarkMode} onToggle={onToggle} />
 
                 </Toolbar>
             </AppBar>

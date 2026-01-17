@@ -1,22 +1,21 @@
 import {useState, useEffect} from 'react';
 import {taskService} from '../../../services/taskService';
 import type {Task} from '../../../types';
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
 
 export const useMainPage = () => {
     const [allTasks, setAllTasks] = useState<Task[]>([]);
-
-    const getCurrentDate = ():Date => { return new Date(); };
-
-    const [currentDate, setCurrentDate] = useState(getCurrentDate());
+    const [currentDate, setCurrentDate] = useState(dayjs());
 
     useEffect(() => {
         const fetchTasks = async () => {
+
+            if (!currentDate || !currentDate.isValid()) return;
+
             try {
-                const year = currentDate.getFullYear();
-                const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-                const day = String(currentDate.getDate()).padStart(2, '0');
-                const response = await taskService
-                    .getTodayTasks(`${year}-${month}-${day}`);
+                const dateParam = currentDate.format('YYYY-MM-DD');
+                const response = await taskService.getTodayTasks(dateParam);
                 setAllTasks(response.data);
 
             } catch (error) {
@@ -40,33 +39,30 @@ export const useMainPage = () => {
 
     const createTask = async (title: string, description: string, category: string, date: Date) => {
         try {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-
             const newTaskData = {
                 title,
                 description,
                 category,
                 status: false,
-                date: `${year}-${month}-${day}`
+                date: dayjs(date).format('YYYY-MM-DD')
             };
 
             const response = await taskService.createTask(newTaskData);
-            setAllTasks(prev => [...prev, response.data]);
+            if (dayjs(date).format('YYYY-MM-DD') === currentDate.format('YYYY-MM-DD')) {
+                setAllTasks(prev => [...prev, response.data]);
+            }
+            // setAllTasks(prev => [...prev, response.data]);
+
         } catch (error) {
             console.error("Erro ao criar task:", error);
         }
     };
 
     const changeDate = (change: string) => {
-        const newDate = new Date(currentDate);
         if (change === 'tomorrow') {
-            newDate.setDate(newDate.getDate() + 1);
-            setCurrentDate(newDate);
+            setCurrentDate(prev => prev.add(1, 'day'));
         } else if (change === 'yesterday') {
-            newDate.setDate(newDate.getDate() - 1);
-            setCurrentDate(newDate);
+            setCurrentDate(prev => prev.subtract(1, 'day'));
         }
     };
 
