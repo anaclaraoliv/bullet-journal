@@ -1,15 +1,22 @@
-import {Box, Button, Dialog, Divider, Switch, TextField, Typography} from "@mui/material";
+import { Box, Button, Dialog, Divider, Switch, TextField, Typography } from "@mui/material";
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import 'dayjs/locale/pt-br';
 import styles from './style.module.css';
-import {useMainPage} from "../../pages/MainPage/hooks/useMainPage.ts";
 import {useState} from "react";
 
-const ModalTask = ({ open, onClose}: { open: boolean, onClose: () => void}) => {
-    const { createTask } = useMainPage();
+const ModalTask = ({ open, onClose, createTask, currentDate}: {
+    open: boolean,
+    onClose: () => void,
+    createTask: (title: string, description: string, category: string, date: Date) => Promise<void>,
+    currentDate: dayjs.Dayjs
+}) => {
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('');
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [date, setDate] = useState<Dayjs | null>(currentDate );
     const [errors, setErrors] = useState({ title: false, category: false });
 
     const handleSave = async () => {
@@ -22,19 +29,21 @@ const ModalTask = ({ open, onClose}: { open: boolean, onClose: () => void}) => {
         }
 
         try {
-            await createTask(title, description, category, new Date(date + 'T00:00:00'));
-            setTitle('');
-            setDescription('');
-            setCategory('');
-            setErrors({ title: false, category: false });
-            onClose();
+            if (date) {
+                await createTask(title, description, category, date.toDate());
+                setTitle('');
+                setDescription('');
+                setCategory('');
+                setErrors({title: false, category: false});
+                onClose();
+            }
         } catch (error) {
             console.error("Erro ao salvar tarefa:", errors, " | ", error);
         }
     };
 
     return (
-        <Box >
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
             <Dialog
                 open={open}
                 onClose={onClose}
@@ -71,14 +80,17 @@ const ModalTask = ({ open, onClose}: { open: boolean, onClose: () => void}) => {
                         <Typography component="h2" sx={{ mt: 3.6 , mr: 3.5}}>
                             DATA
                         </Typography>
-                        <TextField
-                            fullWidth={true}
-                            id="date-input"
-                            type="date"
-                            variant="filled"
-                            sx={{ mt: 2}}
+                        <DatePicker
+                            format="DD-MM-YYYY"
                             value={date}
-                            onChange={(e) => setDate(e.target.value)}
+                             onChange={(newValue) => setDate(newValue)}
+                            slotProps={{
+                                textField: {
+                                    variant: 'filled',
+                                    fullWidth: true,
+                                    sx: { mt: 2 }
+                                }
+                            }}
                         />
                     </Box>
 
@@ -120,7 +132,7 @@ const ModalTask = ({ open, onClose}: { open: boolean, onClose: () => void}) => {
                     </Button>
                 </Box>
             </Dialog>
-        </Box>
+        </LocalizationProvider>
     );
 };
 

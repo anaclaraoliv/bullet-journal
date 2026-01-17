@@ -22,6 +22,7 @@ import {useRef, useState} from "react";
 import EventIcon from '@mui/icons-material/Event';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import dayjs from "dayjs";
 
 const MainPage = () => {
 
@@ -32,7 +33,8 @@ const MainPage = () => {
         deleteTask,
         currentDate,
         changeDate,
-        setCurrentDate
+        setCurrentDate,
+        createTask
     } = useMainPage();
 
     const [open, setOpen] = useState(false);
@@ -68,7 +70,9 @@ const MainPage = () => {
                 </IconButton>
 
                 <Typography variant="h4" sx={{ textAlign: 'center', fontFamily:"'Julius Sans One', sans-serif" }}>
-                    {currentDate.toISOString().split('T')[0]}
+                    {currentDate && currentDate.isValid()
+                        ? currentDate.format('DD.MM.YYYY')
+                        : '-- . -- . ----'}
                 </Typography>
 
                 <IconButton  onClick={() => changeDate('tomorrow')}>
@@ -89,10 +93,10 @@ const MainPage = () => {
                                     border: 'none',
                                     padding: 0
                                 }}
-                                value={currentDate.toISOString().split('T')[0]}
+                                value={currentDate && currentDate.isValid() ? currentDate.format('YYYY-MM-DD') : ''}
                                 onChange={(e) => {
                                     if (e.target.value) {
-                                        setCurrentDate(new Date(e.target.value + 'T00:00:00'));
+                                        setCurrentDate(dayjs(e.target.value));
                                     }
                                 }}
                             />
@@ -101,7 +105,23 @@ const MainPage = () => {
 
             </Container>
 
-            <ModalTask open={open} onClose={handleClose}/>
+            {/* MODAL - CREATE NEW TASK*/}
+            <ModalTask
+                /**
+                 * Força o React a desmontar e remontar o componente ModalTask sempre
+                 * que seu estado de visibilidade muda. Isso garante que:
+                 * 1. O 'useState' local seja reinicializado com o 'currentDate' mais recente
+                 *    passado via props, eliminando a necessidade de 'useEffect' para sincronização.
+                 * 2. Todos os campos do formulário sejam resetados automaticamente ao fechar/abrir.
+                 * 3. Evita renderizações em cascata (cascading renders), respeitando as regras
+                 *    de performance do ESLint (react-hooks/set-state-in-effect).
+                 */
+                key={open ? 'open' : 'closed'}
+                open={open}
+                onClose={handleClose}
+                createTask={createTask}
+                currentDate={currentDate}
+            />
 
             <Paper className={styles['to-do-list']} elevation={4} >
                 <Stack sx={{ width: '90%' }}>
@@ -118,23 +138,26 @@ const MainPage = () => {
                         <AccordionDetails>
                             <List sx={{maxHeight: '400px', overflowY: 'auto', pr: 1,}}>
                                 {incompletedTasks.map((task) => (
-                                    <ListItem key={task.id} className={styles['items-list']}>
-                                        <IconButton onClick={() => changeStatus(task.id)}>
-                                            <CheckBoxOutlineBlankIcon/>
-                                        </IconButton>
+                                    <ListItem key={task.id} className={styles['items-list']} disablePadding>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                            <IconButton onClick={() => changeStatus(task.id)}>
+                                                <CheckBoxOutlineBlankIcon/>
+                                            </IconButton>
 
-                                        <Typography>
-                                            {task.title}
-                                        </Typography>
+                                            <Typography sx={{ ml: 1 }}>
+                                                {task.title}
+                                            </Typography>
 
-                                        <IconButton sx={{justifyContent: "flex-end"}}>
-                                            <EditIcon/>
-                                        </IconButton>
+                                            <Box sx={{ flexGrow: 1 }} />
 
-                                        <IconButton
-                                            onClick={() => deleteTask(task.id)}>
-                                            <DeleteIcon/>
-                                        </IconButton>
+                                            <IconButton>
+                                                <EditIcon/>
+                                            </IconButton>
+
+                                            <IconButton onClick={() => deleteTask(task.id)}>
+                                                <DeleteIcon/>
+                                            </IconButton>
+                                        </Box>
                                     </ListItem>
                                 ))}
                             </List>
