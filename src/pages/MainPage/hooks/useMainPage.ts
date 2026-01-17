@@ -7,22 +7,31 @@ import 'dayjs/locale/pt-br';
 export const useMainPage = () => {
     const [allTasks, setAllTasks] = useState<Task[]>([]);
     const [currentDate, setCurrentDate] = useState(dayjs());
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchTasks = async () => {
 
+        const fetchTasks = async () => {
             if (!currentDate || !currentDate.isValid()) return;
+
+            setLoading(true);
+
+            setAllTasks([]);
 
             try {
                 const dateParam = currentDate.format('YYYY-MM-DD');
                 const response = await taskService.getTodayTasks(dateParam);
+                await new Promise(resolve => setTimeout(resolve, 2000));
                 setAllTasks(response.data);
 
             } catch (error) {
                 console.error("Erro ao carregar tasks:", error);
+
+            } finally {
+                setLoading(false);
+
             }
         };
-
          void fetchTasks();
 
     }, [currentDate]);
@@ -74,6 +83,7 @@ export const useMainPage = () => {
         createTask,
         currentDate,
         changeDate,
-        setCurrentDate
+        setCurrentDate,
+        loading
     };
 };
