@@ -23,6 +23,7 @@ import EventIcon from '@mui/icons-material/Event';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import dayjs from "dayjs";
+import * as React from "react";
 
 const MainPage = () => {
 
@@ -38,9 +39,14 @@ const MainPage = () => {
     } = useMainPage();
 
     const [open, setOpen] = useState(false);
-
     const handleOpenModal = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const [expanded, setExpanded] = React.useState<string | false>('todo');
+
+    const handleChange =
+        (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
+            setExpanded(newExpanded ? panel : false);
+        };
 
     const dateInputRef = useRef<HTMLInputElement>(null);
 
@@ -109,7 +115,7 @@ const MainPage = () => {
             <ModalTask
                 /**
                  * Força o React a desmontar e remontar o componente ModalTask sempre
-                 * que seu estado de visibilidade muda. Isso garante que:
+                 * que o estado de visibilidade muda. Isso garante que:
                  * 1. O 'useState' local seja reinicializado com o 'currentDate' mais recente
                  *    passado via props, eliminando a necessidade de 'useEffect' para sincronização.
                  * 2. Todos os campos do formulário sejam resetados automaticamente ao fechar/abrir.
@@ -124,8 +130,10 @@ const MainPage = () => {
             />
 
             <Paper className={styles['to-do-list']} elevation={4} >
-                <Stack sx={{ width: '90%' }}>
-                    <Accordion elevation={0} className={styles['accordion-style']}>
+                <Stack sx={{ width: '100%', alignItems: 'right' }}>
+                    <Accordion elevation={0} className={styles['accordion-style']}
+                               expanded={expanded === 'todo'} onChange={handleChange('todo')}
+                    >
                         <AccordionSummary
                             expandIcon={<ArrowDropDownIcon />}
                             aria-controls="panel1-content"
@@ -139,8 +147,9 @@ const MainPage = () => {
                             <List sx={{maxHeight: '400px', overflowY: 'auto', pr: 1,}}>
                                 {incompletedTasks.map((task) => (
                                     <ListItem key={task.id} className={styles['items-list']} disablePadding>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                                            <IconButton onClick={() => changeStatus(task.id)}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                                             onClick={() => changeStatus(task.id)}>
+                                            <IconButton>
                                                 <CheckBoxOutlineBlankIcon/>
                                             </IconButton>
 
@@ -164,7 +173,9 @@ const MainPage = () => {
                         </AccordionDetails>
                     </Accordion>
 
-                    <Accordion elevation={0} className={styles['accordion-style']}>
+                    <Accordion elevation={0} className={styles['accordion-style']}
+                               expanded={expanded === 'done'} onChange={handleChange('done')}
+                    >
                         <AccordionSummary
                             expandIcon={<ArrowDropDownIcon />}
                             aria-controls="panel2-content"
@@ -173,24 +184,19 @@ const MainPage = () => {
                             <Typography component="span" sx={{m:'auto'}}>DONE</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <List sx={{maxHeight: '400px', overflowY: 'auto', pr: 1,}}>
+                            <List sx={{maxHeight: '400px',  pr: 1,}}>
                                 {completedTasks.map((task) => (
-                                    <ListItem key={task.id} className={styles['items-list']}>
-                                        <IconButton onClick={() => changeStatus(task.id)}>
-                                            <CheckBoxIcon/>
-                                        </IconButton>
+                                    <ListItem key={task.id} className={styles['items-list']} disablePadding>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                                             onClick={() => changeStatus(task.id)}>
+                                            <IconButton>
+                                                <CheckBoxIcon/>
+                                            </IconButton>
 
-                                        <Typography>
-                                            {task.title}
-                                        </Typography>
-
-                                        <IconButton>
-                                            <EditIcon/>
-                                        </IconButton>
-
-                                        <IconButton onClick={() => deleteTask(task.id)}>
-                                            <DeleteIcon/>
-                                        </IconButton>
+                                            <Typography sx={{ ml: 1 }}>
+                                                {task.title}
+                                            </Typography>
+                                        </Box>
                                     </ListItem>
                                 ))}
                             </List>
