@@ -24,6 +24,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import dayjs from "dayjs";
 import * as React from "react";
+import TaskSkeleton from "./skeletons/TaskSkeleton.tsx";
 
 const MainPage = () => {
 
@@ -35,14 +36,16 @@ const MainPage = () => {
         currentDate,
         changeDate,
         setCurrentDate,
-        createTask
+        createTask,
+        loading,
     } = useMainPage();
 
     const [open, setOpen] = useState(false);
+
     const handleOpenModal = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const [expanded, setExpanded] = React.useState<string | false>('todo');
 
+    const [expanded, setExpanded] = React.useState<string | false>('todo');
     const handleChange =
         (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
             setExpanded(newExpanded ? panel : false);
@@ -53,8 +56,9 @@ const MainPage = () => {
     const handleIconClick = () => {
         dateInputRef.current?.showPicker();
     };
+
     return (
-        <Container maxWidth={false} sx={{  pt: 10 }} >
+        <Container maxWidth={false} sx={{ pt: 10 }} >
 
             <AppBarBullet />
 
@@ -78,7 +82,7 @@ const MainPage = () => {
                 <Typography variant="h4" sx={{ textAlign: 'center', fontFamily:"'Julius Sans One', sans-serif" }}>
                     {currentDate && currentDate.isValid()
                         ? currentDate.format('DD.MM.YYYY')
-                        : '-- . -- . ----'}
+                        : '--.--.----'}
                 </Typography>
 
                 <IconButton  onClick={() => changeDate('tomorrow')}>
@@ -136,15 +140,15 @@ const MainPage = () => {
                     >
                         <AccordionSummary
                             expandIcon={<ArrowDropDownIcon />}
-                            aria-controls="panel1-content"
-                            id="panel1-header"
+                            aria-controls="todo-content"
+                            id="todo-header"
                         >
                             <Typography component="span" sx={{m:'auto'}}>TO DO</Typography>
 
                         </AccordionSummary>
 
                         <AccordionDetails>
-                            <List sx={{maxHeight: '400px', overflowY: 'auto', pr: 1,}}>
+                            {loading ? <TaskSkeleton /> : <List sx={{maxHeight: '400px', overflowY: 'auto' }}>
                                 {incompletedTasks.map((task) => (
                                     <ListItem key={task.id} className={styles['items-list']} disablePadding>
                                         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}
@@ -170,6 +174,7 @@ const MainPage = () => {
                                     </ListItem>
                                 ))}
                             </List>
+                            }
                         </AccordionDetails>
                     </Accordion>
 
@@ -178,13 +183,13 @@ const MainPage = () => {
                     >
                         <AccordionSummary
                             expandIcon={<ArrowDropDownIcon />}
-                            aria-controls="panel2-content"
-                            id="panel2-header"
+                            aria-controls="done-content"
+                            id="done-header"
                         >
                             <Typography component="span" sx={{m:'auto'}}>DONE</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <List sx={{maxHeight: '400px',  pr: 1,}}>
+                            {loading ? <TaskSkeleton /> : <List sx={{maxHeight: '400px', overflowY: 'auto' ,}}>
                                 {completedTasks.map((task) => (
                                     <ListItem key={task.id} className={styles['items-list']} disablePadding>
                                         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}
@@ -200,6 +205,7 @@ const MainPage = () => {
                                     </ListItem>
                                 ))}
                             </List>
+                            }
                         </AccordionDetails>
                     </Accordion>
                 </Stack>

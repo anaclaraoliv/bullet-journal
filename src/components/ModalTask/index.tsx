@@ -128,10 +128,7 @@ const ModalTask = ({ open, onClose, createTask, currentDate}: {
                         />
                     </Box>
 
-                    <Button
-                        sx={{ ml:'80%', mt: 2 }}
-                        onClick={handleSave}
-                    >
+                    <Button  sx={{ ml:'80%', mt: 2 }} onClick={handleSave} >
                         SALVAR
                     </Button>
                 </Box>
