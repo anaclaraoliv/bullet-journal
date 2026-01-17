@@ -19,7 +19,8 @@ const LigthColors = {
     textSecondary: '#49424A',
 
     success: '#AFCBBA',
-    error: '#BF98A9',
+    error: '#DB3951',
+    errorLigth: '#BF98A9',
     errorLight: '#D4B7B2',
     processing: '#F3E7A8',
     processingLight: '#EEE2C3',
@@ -42,7 +43,8 @@ const DarkColors = {
     textSecondary: '#A19DA3',
 
     success: '#95AF9F',
-    error: '#A37E8D',
+    error: '#DB3951',
+    errorLigth: '#BF98A9',
     warning: '#D9CF96',
 };
 
@@ -87,15 +89,6 @@ const commonSettings: ThemeOptions = {
             },
         },
 
-        // MuiModal: {
-        //     styleOverrides: {
-        //         root: {
-        //             borderRadius: '10px',
-        //             margin: '2em',
-        //
-        //         },
-        //     },
-        // },
     },
 };
 
@@ -250,7 +243,7 @@ export const darkTheme = createTheme({
             }
         },
 
-        MuiButton : {
+        MuiButton: {
             styleOverrides: {
                 root: {
                     color: DarkColors.textPrimary,

@@ -17,14 +17,14 @@ const ModalTask = ({ open, onClose, createTask, currentDate}: {
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('');
     const [date, setDate] = useState<Dayjs | null>(currentDate );
-    const [errors, setErrors] = useState({ title: false, category: false });
+    const [errors, setErrors] = useState({ title: false, date: false });
 
     const handleSave = async () => {
         const titleBlank = !title.trim();
-        const categoryBlank = !category.trim();
+        const dateBlank = !date || !date.isValid();;
 
-        if (titleBlank || categoryBlank) {
-            setErrors({ title: titleBlank, category: categoryBlank });
+        if (titleBlank || dateBlank) {
+            setErrors({ title: titleBlank, date: dateBlank });
             return;
         }
 
@@ -34,7 +34,7 @@ const ModalTask = ({ open, onClose, createTask, currentDate}: {
                 setTitle('');
                 setDescription('');
                 setCategory('');
-                setErrors({title: false, category: false});
+                setErrors({title: false, date: false});
                 onClose();
             }
         } catch (error) {
@@ -48,7 +48,7 @@ const ModalTask = ({ open, onClose, createTask, currentDate}: {
                 open={open}
                 onClose={onClose}
             >
-                <Typography component="h1" sx={{ textAlign: 'center', mt: 3 }}>
+                <Typography component="h1" sx={{ textAlign: 'center', mt: 2 }}>
                     NOVA TAREFA
                 </Typography>
 
@@ -72,23 +72,27 @@ const ModalTask = ({ open, onClose, createTask, currentDate}: {
                             variant="filled"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
+                            error={errors.title}
+                            helperText={errors.title ? "Preencha o campo" : ""}
                         />
                         <Switch disabled sx={{  mt: 1}}/>
                     </Box>
 
-                    <Box display="flex" sx={{ mt: 2 }}>
+                    <Box display="flex" sx={{ mt: 2}}>
                         <Typography component="h2" sx={{ mt: 3.6 , mr: 3.5}}>
                             DATA
                         </Typography>
                         <DatePicker
-                            format="DD-MM-YYYY"
+                            format="DD / MM / YYYY"
                             value={date}
                              onChange={(newValue) => setDate(newValue)}
                             slotProps={{
                                 textField: {
                                     variant: 'filled',
                                     fullWidth: true,
-                                    sx: { mt: 2 }
+                                    sx: { mt: 2 },
+                                    error: errors.date,
+                                    helperText: errors.date ? "Selecione uma data válida" : ""
                                 }
                             }}
                         />
@@ -125,7 +129,7 @@ const ModalTask = ({ open, onClose, createTask, currentDate}: {
                     </Box>
 
                     <Button
-                        sx={{ ml:'80%', mt: 3.6 }}
+                        sx={{ ml:'80%', mt: 2 }}
                         onClick={handleSave}
                     >
                         SALVAR
