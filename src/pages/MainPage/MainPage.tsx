@@ -3,7 +3,7 @@ import {
     AccordionDetails,
     AccordionSummary, Box,
     Container, IconButton,
-    List, ListItem,
+    List,
     Paper,
     Stack,
     Typography
@@ -11,13 +11,9 @@ import {
 import AppBarBullet from "../../components/AppBarBullet";
 import styles from './style.module.css';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
 import {useMainPage} from "./hooks/useMainPage.ts";
-import ModalTask from "../../components/ModalTask/index.tsx";
+import ModalTask from "../../components/ModalTask/ModalTask.tsx";
 import {useRef, useState} from "react";
 import EventIcon from '@mui/icons-material/Event';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -25,6 +21,10 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import dayjs from "dayjs";
 import * as React from "react";
 import TaskSkeleton from "./skeletons/TaskSkeleton.tsx";
+import {SortableContext, verticalListSortingStrategy} from "@dnd-kit/sortable";
+import Task from "./components/TaskComponent/Task.tsx";
+import {DndContext, closestCorners, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
+import type {Task as TaskType} from "../../types/task.ts";
 
 const MainPage = () => {
 
@@ -34,11 +34,21 @@ const MainPage = () => {
         changeStatus,
         deleteTask,
         currentDate,
+        updateTask,
         changeDate,
         setCurrentDate,
         createTask,
         loading,
+        handleDragEnd,
     } = useMainPage();
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        })
+    );
 
     const [open, setOpen] = useState(false);
     const handleOpenModal = () => setOpen(true);
@@ -55,6 +65,8 @@ const MainPage = () => {
         dateInputRef.current?.showPicker();
     };
 
+    const [dataTaskEdit, setDataTaskEdit] = useState<TaskType>();
+
     return (
         <Container maxWidth={false} sx={{ pt: 10 }} >
 
@@ -69,7 +81,9 @@ const MainPage = () => {
                            justifyContent: 'space-between'}}
             >
 
-                <IconButton onClick={handleOpenModal} >
+                <IconButton onClick={() => {
+                    setDataTaskEdit?.(undefined);
+                    handleOpenModal?.();} } >
                     <AddIcon fontSize={'large'} />
                 </IconButton>
 
@@ -115,20 +129,13 @@ const MainPage = () => {
 
             {/* MODAL - CREATE NEW TASK*/}
             <ModalTask
-                /**
-                 * Força o React a desmontar e remontar o componente ModalTask sempre
-                 * que o estado de visibilidade muda. Isso garante que:
-                 * 1. O 'useState' local seja reinicializado com o 'currentDate' mais recente
-                 *    passado via props, eliminando a necessidade de 'useEffect' para sincronização.
-                 * 2. Todos os campos do formulário sejam resetados automaticamente ao fechar/abrir.
-                 * 3. Evita renderizações em cascata (cascading renders), respeitando as regras
-                 *    de performance do ESLint (react-hooks/set-state-in-effect).
-                 */
                 key={open ? 'open' : 'closed'}
                 open={open}
                 onClose={handleClose}
                 createTask={createTask}
+                updateTask={updateTask}
                 currentDate={currentDate}
+                dataTaskEdit={dataTaskEdit}
             />
 
             <Paper className={styles['to-do-list']} elevation={4} >
@@ -146,33 +153,27 @@ const MainPage = () => {
                         </AccordionSummary>
 
                         <AccordionDetails>
-                            {loading ? <TaskSkeleton /> : <List sx={{maxHeight: '400px', overflowY: 'auto' }}>
-                                {incompletedTasks.map((task) => (
-                                    <ListItem key={task.id} className={styles['items-list']} disablePadding>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}
-                                             onClick={() => changeStatus(task.id)}>
-                                            <IconButton>
-                                                <CheckBoxOutlineBlankIcon/>
-                                            </IconButton>
+                            <DndContext
+                                sensors={sensors}
+                                collisionDetection={closestCorners}
+                                onDragEnd={handleDragEnd}>
+                                <SortableContext items={incompletedTasks} strategy={verticalListSortingStrategy}>
+                                    {loading ? <TaskSkeleton /> :
+                                        <List sx={{maxHeight: '400px', overflowY: 'auto' }}>
+                                        {incompletedTasks.map((TaskComponent) => (
 
-                                            <Typography sx={{ ml: 1 }}>
-                                                {task.title}
-                                            </Typography>
+                                            <Task task = {TaskComponent}
+                                                  changeStatus = {changeStatus}
+                                                  deleteTask = {deleteTask}
+                                                  handleOpenModal = {handleOpenModal}
+                                                  setDataTaskEdit = {setDataTaskEdit}
+                                            />
 
-                                            <Box sx={{ flexGrow: 1 }} />
-
-                                            <IconButton>
-                                                <EditIcon/>
-                                            </IconButton>
-
-                                            <IconButton onClick={() => deleteTask(task.id)}>
-                                                <DeleteIcon/>
-                                            </IconButton>
-                                        </Box>
-                                    </ListItem>
-                                ))}
-                            </List>
-                            }
+                                        ))}
+                                        </List>
+                                    }
+                                </SortableContext>
+                            </DndContext>
                         </AccordionDetails>
                     </Accordion>
 
@@ -186,24 +187,20 @@ const MainPage = () => {
                         >
                             <Typography component="span" sx={{m:'auto'}}>DONE</Typography>
                         </AccordionSummary>
-                        <AccordionDetails>
-                            {loading ? <TaskSkeleton /> : <List sx={{maxHeight: '400px', overflowY: 'auto' ,}}>
-                                {completedTasks.map((task) => (
-                                    <ListItem key={task.id} className={styles['items-list']} disablePadding>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}
-                                             onClick={() => changeStatus(task.id)}>
-                                            <IconButton>
-                                                <CheckBoxIcon/>
-                                            </IconButton>
 
-                                            <Typography sx={{ ml: 1 }}>
-                                                {task.title}
-                                            </Typography>
-                                        </Box>
-                                    </ListItem>
-                                ))}
-                            </List>
-                            }
+                        <AccordionDetails>
+                            <SortableContext items={completedTasks} strategy={verticalListSortingStrategy}>
+                                {loading ? <TaskSkeleton /> :
+                                    <List sx={{maxHeight: '400px', overflowY: 'auto' }}>
+                                        {completedTasks.map((TaskComponent) => (
+                                            <Task task={TaskComponent}
+                                                  changeStatus={changeStatus}
+                                                  deleteTask={deleteTask}
+                                            />
+                                        ))}
+                                    </List>
+                                }
+                            </SortableContext>
                         </AccordionDetails>
                     </Accordion>
                 </Stack>

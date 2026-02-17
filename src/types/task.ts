@@ -5,4 +5,5 @@ export interface Task {
     status: boolean;
     date: string;
     category: string;
+    position: number;
 }
