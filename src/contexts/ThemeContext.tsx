@@ -25,7 +25,7 @@ export const AppThemeProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
+// eslint-disable-next-line react-refresh/only-export-TaskComponent
 export const useAppTheme = () => {
     const context = useContext(ThemeContext);
     if (!context) {

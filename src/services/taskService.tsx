@@ -15,7 +15,16 @@ export const taskService = {
 
     deleteTask: (id: string) => api.delete(`/api/tasks/task/delete/${id}`),
 
-    createTask: (task: { title: string; description: string; category: string; status: boolean; date: string }) => api.post(
+    createTask: (task: { title: string, description: string,
+                        category: string, status: boolean,
+        date: string, position: number }) => api.post(
         '/api/tasks', task),
+
+    updateTask: (task: {id: string, status: boolean,
+        description: string, category: string,
+        date: string, title: string}) => api.put(`/api/tasks/task/updateTask`, task),
+
+    reorderTasks: (payload: Array<{ id: string; position: number }>)  =>
+        api.patch('/api/tasks/updateOrder', payload),
 
 };

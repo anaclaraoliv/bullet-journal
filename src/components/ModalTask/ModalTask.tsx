@@ -1,40 +1,76 @@
-import { Box, Button, Dialog, Divider, Switch, TextField, Typography } from "@mui/material";
+import {Box, Button, Dialog, Divider, MenuItem, Switch, TextField, Typography} from "@mui/material";
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/pt-br';
 import styles from './style.module.css';
 import {useState} from "react";
+import {CATEGORIES} from "../../pages/MainPage/components/TaskComponent/constant.tsx";
+import type {Task} from '../../types';
 
-const ModalTask = ({ open, onClose, createTask, currentDate}: {
+type EditData = Task | null | undefined;
+
+const buildInitialForm = (dataTaskEdit: EditData, currentDate: Dayjs) => ({
+    id: dataTaskEdit?.id ?? '',
+    title: dataTaskEdit?.title ?? '',
+    description: dataTaskEdit?.description ?? '',
+    category: dataTaskEdit?.category ?? '',
+    date: dataTaskEdit ? dayjs(dataTaskEdit.date) : currentDate,
+    status: dataTaskEdit?.status ?? false
+});
+
+const ModalTask = ({
+                       open,
+                       onClose,
+                       createTask,
+                       updateTask,
+                       currentDate,
+                       dataTaskEdit,}: {
     open: boolean,
     onClose: () => void,
     createTask: (title: string, description: string, category: string, date: Date) => Promise<void>,
-    currentDate: dayjs.Dayjs
-}) => {
+    updateTask: (id: string, title: string, description: string, category: string, date: Date, status: boolean) => Promise<void>,
+    currentDate: dayjs.Dayjs,
+    dataTaskEdit?: Task | null;
 
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [category, setCategory] = useState('');
-    const [date, setDate] = useState<Dayjs | null>(currentDate );
-    const [errors, setErrors] = useState({ title: false, date: false });
+}) => {
+    const initial = buildInitialForm(dataTaskEdit, currentDate);
+
+    const [id, setId] = useState(() => initial.id);
+    const [title, setTitle] = useState(() => initial.title);
+    const [description, setDescription] = useState(() => initial.description);
+    const [category, setCategory] = useState(() => initial.category);
+    const [date, setDate] = useState<Dayjs | null>(() => initial.date);
+    const [status, setStatus] = useState(() => initial.status);
+    const [errors, setErrors] = useState(() => ({ title: false, date: false, category: false }));
 
     const handleSave = async () => {
         const titleBlank = !title.trim();
-        const dateBlank = !date || !date.isValid();;
+        const dateBlank = !date || !date.isValid();
+        const categoryBlank = !category;
 
-        if (titleBlank || dateBlank) {
-            setErrors({ title: titleBlank, date: dateBlank });
+        if (titleBlank || dateBlank || categoryBlank) {
+            setErrors({ title: titleBlank, date: dateBlank, category: categoryBlank });
             return;
         }
 
         try {
-            if (date) {
+            if (date && !dataTaskEdit) {
                 await createTask(title, description, category, date.toDate());
                 setTitle('');
                 setDescription('');
                 setCategory('');
-                setErrors({title: false, date: false});
+                setErrors({title: false, date: false, category: false});
+                onClose();
+            }
+
+            if (dataTaskEdit) {
+                await updateTask(id, title, description, category, date?.toDate(), status);
+                setId('');
+                setTitle('');
+                setDescription('');
+                setCategory('');
+                setErrors({title: false, date: false, category: false});
                 onClose();
             }
         } catch (error) {
@@ -49,7 +85,7 @@ const ModalTask = ({ open, onClose, createTask, currentDate}: {
                 onClose={onClose}
             >
                 <Typography component="h1" sx={{ textAlign: 'center', mt: 2 }}>
-                    NOVA TAREFA
+                    {dataTaskEdit ? "TAREFA" :  "NOVA TAREFA"}
                 </Typography>
 
                 <Divider sx={{ mt: 2 }}/>
@@ -75,7 +111,28 @@ const ModalTask = ({ open, onClose, createTask, currentDate}: {
                             error={errors.title}
                             helperText={errors.title ? "Preencha o campo" : ""}
                         />
-                        <Switch disabled sx={{  mt: 1}}/>
+
+                        <Switch
+                            checked={status}
+                            onChange={(e) => setStatus(e.target.checked)}
+                            sx={{
+                                mt: 1,
+                                '& .MuiSwitch-switchBase': {
+                                    color: status ? 'success.main' : 'grey.500',
+                                },
+                                '& .MuiSwitch-switchBase.Mui-checked': {
+                                    color: 'success.main',
+                                },
+                                '& .MuiSwitch-track': {
+                                    backgroundColor: status ? 'success.light' : 'grey.400',
+                                    opacity: 1,
+                                },
+                                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                    backgroundColor: 'success.main',
+                                    opacity: 1,
+                                },
+                            }}
+                        />
                     </Box>
 
                     <Box display="flex" sx={{ mt: 2}}>
@@ -106,10 +163,19 @@ const ModalTask = ({ open, onClose, createTask, currentDate}: {
                             id="category"
                             label="Categoria"
                             variant="filled"
-                            sx={{ mt: 2 }}
+                            sx={{ mt: 2, minWidth: 220 }}
+                            select
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
-                        />
+                            error={errors.category}
+                        >
+                            {Object.entries(CATEGORIES).map(([key, { label }]) => (
+                                <MenuItem key={key} value={key}>
+                                    {label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+
                     </Box>
 
                     <Box sx={{ mt: 2}}>
