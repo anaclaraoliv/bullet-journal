@@ -84,7 +84,8 @@ export const useMainPage = () => {
         description: string,
         category: string,
         date: Date,
-        status: boolean
+        status: boolean,
+        position: number
     ) => {
 
         try {
@@ -95,12 +96,20 @@ export const useMainPage = () => {
                 category,
                 status,
                 date: dayjs(date).format('YYYY-MM-DD'),
+                position: position,
             };
 
             const response = await taskService.updateTask(updatedTaskData);
             if (dayjs(date).format('YYYY-MM-DD') === currentDate.format('YYYY-MM-DD')) {
-                setAllTasks(prev => [...prev, response.data]);
+                // setAllTasks(prev => [...prev, response.data]);
+                type HasId = { id: string };
+                const replaceById = <T extends HasId>(list: T[], nextItem: T): T[] =>
+                    list.map((item) => (item.id === nextItem.id ? nextItem : item));
+
+                const newList = replaceById(allTasks, response.data);
+                setAllTasks(newList);
             }
+
 
         } catch (error) {
             console.error("Erro ao criar TaskComponent:", error);
