@@ -22,7 +22,7 @@ export const taskService = {
 
     updateTask: (task: {id: string, status: boolean,
         description: string, category: string,
-        date: string, title: string}) => api.put(`/api/tasks/task/updateTask`, task),
+        date: string, title: string}) => api.patch(`/api/tasks/task/updateTask`, task),
 
     reorderTasks: (payload: Array<{ id: string; position: number }>)  =>
         api.patch('/api/tasks/updateOrder', payload),

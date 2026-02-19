@@ -16,7 +16,8 @@ const buildInitialForm = (dataTaskEdit: EditData, currentDate: Dayjs) => ({
     description: dataTaskEdit?.description ?? '',
     category: dataTaskEdit?.category ?? '',
     date: dataTaskEdit ? dayjs(dataTaskEdit.date) : currentDate,
-    status: dataTaskEdit?.status ?? false
+    status: dataTaskEdit?.status ?? false,
+    position: dataTaskEdit?.position ?? 0
 });
 
 const ModalTask = ({
@@ -29,7 +30,7 @@ const ModalTask = ({
     open: boolean,
     onClose: () => void,
     createTask: (title: string, description: string, category: string, date: Date) => Promise<void>,
-    updateTask: (id: string, title: string, description: string, category: string, date: Date, status: boolean) => Promise<void>,
+    updateTask: (id: string, title: string, description: string, category: string, date: Date, status: boolean, position: number) => Promise<void>,
     currentDate: dayjs.Dayjs,
     dataTaskEdit?: Task | null;
 
@@ -43,6 +44,7 @@ const ModalTask = ({
     const [date, setDate] = useState<Dayjs | null>(() => initial.date);
     const [status, setStatus] = useState(() => initial.status);
     const [errors, setErrors] = useState(() => ({ title: false, date: false, category: false }));
+    const position = initial.position;
 
     const handleSave = async () => {
         const titleBlank = !title.trim();
@@ -65,7 +67,7 @@ const ModalTask = ({
             }
 
             if (dataTaskEdit) {
-                await updateTask(id, title, description, category, date?.toDate(), status);
+                await updateTask(id, title, description, category, date?.toDate(), status, position);
                 setId('');
                 setTitle('');
                 setDescription('');
