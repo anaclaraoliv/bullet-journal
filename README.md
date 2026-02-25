@@ -29,5 +29,5 @@ Aplicação web inspirada na metodologia bullet journal para organizar tarefas p
 
 ## Como rodar
 
-Clone este repositório e o backend (https://github.com/anaclaraoliv/bj-backend), execute o script de criação do banco fornecido no backend e rode ambos localmente.
+Clone este repositório e o backend (https://github.com/anaclaraoliv/bj-backend) e rode-os localmente; o backend pode ser iniciado via Docker (container pronto) para simplificar o setup.
  
